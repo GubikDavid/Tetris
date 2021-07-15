@@ -13,12 +13,12 @@ public class Tetromino : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKey(KeyCode.LeftArrow) && Time.time - mvPrevTime > .15f)
+        if(Input.GetKey(KeyCode.LeftArrow) && Time.time - mvPrevTime > .13f)
         {
             MoveTetromino(-1);
             mvPrevTime = Time.time;
         }
-        else if (Input.GetKey(KeyCode.RightArrow) && Time.time - mvPrevTime > .15f)
+        else if (Input.GetKey(KeyCode.RightArrow) && Time.time - mvPrevTime > .13f)
         {
             MoveTetromino(1); 
             mvPrevTime = Time.time;
