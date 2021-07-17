@@ -66,12 +66,12 @@ public class Tetromino : MonoBehaviour
         {
             transform.position -= new Vector3(0, -1, 0);
             AddToGrid();
-            enabled = false;
             FindObjectOfType<TetrominoPrediction>().DestroyPrediction();
             FindObjectOfType<GameManager>().NewTetromino();
             isset = true;
+            CheckPops();
+            enabled = false;
         }
-        
     }
     private void MoveTetromino(int i)
     {
@@ -88,12 +88,18 @@ public class Tetromino : MonoBehaviour
         {
             int x = Mathf.RoundToInt(child.transform.position.x);
             int y = Mathf.RoundToInt(child.transform.position.y);
+            if (y < 0) y = 0;
             if (y >= height)
                 FindObjectOfType<GameManager>().GameOver();
             else
+            {
                 grid[x, y] = child;
+                Debug.Log("Added: " + x + " - " + y);
+            }
+               
         }
-        CheckPops();
+        Debug.Log("break");
+        
         GameManager.score += 20;
         FindObjectOfType<GameManager>().UpdateScore();
     }
@@ -145,15 +151,15 @@ public class Tetromino : MonoBehaviour
     }
     private void MoveDown(int i)
     {
-        for(int y = i; y < height - 1; y++)
+        for(int y = i; y < height; y++)
         {
             for(int x = 0; x < width; x++)
             {
-                if(grid[x, y + 1] != null)
+                if(grid[x, y] != null)
                 {
-                    grid[x, y] = grid[x, y + 1];
-                    grid[x, y].transform.position -= Vector3.up;
-                    grid[x, y + 1] = null;
+                    grid[x, y - 1] = grid[x, y];
+                    grid[x, y] = null;
+                    grid[x, y - 1].transform.position -= Vector3.up;
                 }
             }
         }
