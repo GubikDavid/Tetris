@@ -67,11 +67,4 @@ public class GameManager : MonoBehaviour
     {
         Tetromino.fallTime = 0.8f - (0.1f * (level));
     }
-    public void Test()
-    {
-        foreach(Transform t in Tetromino.grid)
-        {
-            Debug.Log(t.localPosition);
-        }
-    }
 }

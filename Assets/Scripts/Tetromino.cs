@@ -6,11 +6,6 @@ public class Tetromino : MonoBehaviour
     public static int width = 10;
     public static int height = 20;
     public static Transform[,] grid = new Transform[width, height];
-    public static bool isset = false;
-    private void Start()
-    {
-        isset = false;
-    }
     private void Update()
     {
         if(Input.GetKey(KeyCode.LeftArrow) && Time.time - mvPrevTime > .13f)
@@ -32,12 +27,12 @@ public class Tetromino : MonoBehaviour
             string x = ValidMove();
             while (x == "Success")
             {
-                transform.position += new Vector3(0, -1, 0);
+                transform.position -= Vector3.up;
                 x = ValidMove();
             }
             SetInPlace();
         }
-        if (Time.time - previousTime > (Input.GetKey(KeyCode.DownArrow) ? fallTime / (10 - GameManager.level) : fallTime))
+        else if (Time.time - previousTime > (Input.GetKey(KeyCode.DownArrow) ? fallTime / (10 - GameManager.level) : fallTime))
         {
             transform.position += new Vector3(0, -1, 0);
             string x = ValidMove();
@@ -59,19 +54,16 @@ public class Tetromino : MonoBehaviour
         else if (x == "object" || x == "ygrid")
             transform.RotateAround(transform.GetChild(0).position, Vector3.forward, 90);
         else FindObjectOfType<TetrominoPrediction>().RotateTetromino();
+            
     }
     private void SetInPlace()
     {
-        if (!isset)
-        {
-            transform.position -= new Vector3(0, -1, 0);
-            AddToGrid();
-            FindObjectOfType<TetrominoPrediction>().DestroyPrediction();
-            FindObjectOfType<GameManager>().NewTetromino();
-            isset = true;
-            CheckPops();
-            enabled = false;
-        }
+        transform.position += Vector3.up;
+        AddToGrid();
+        CheckPops();
+        FindObjectOfType<TetrominoPrediction>().DestroyPrediction();
+        FindObjectOfType<GameManager>().NewTetromino();
+        enabled = false;
     }
     private void MoveTetromino(int i)
     {
@@ -79,8 +71,8 @@ public class Tetromino : MonoBehaviour
         string x = ValidMove();
         if (x == "xgrid" || x == "object")
             transform.position += new Vector3(-i, 0, 0);
-        else 
-            FindObjectOfType<TetrominoPrediction>().MoveTetromino(i);
+        else FindObjectOfType<TetrominoPrediction>().MoveTetromino(i);
+           
     }
     private void AddToGrid()
     {
@@ -91,15 +83,8 @@ public class Tetromino : MonoBehaviour
             if (y < 0) y = 0;
             if (y >= height)
                 FindObjectOfType<GameManager>().GameOver();
-            else
-            {
-                grid[x, y] = child;
-                Debug.Log("Added: " + x + " - " + y);
-            }
-               
+            else grid[x, y] = child;
         }
-        Debug.Log("break");
-        
         GameManager.score += 20;
         FindObjectOfType<GameManager>().UpdateScore();
     }
@@ -109,7 +94,6 @@ public class Tetromino : MonoBehaviour
         {
             int x = Mathf.RoundToInt(child.transform.position.x);
             int y = Mathf.RoundToInt(child.transform.position.y);
-
             if (x < 0 || x > width - 1)
                 return "xgrid";
             else if (y < 0)
@@ -126,7 +110,7 @@ public class Tetromino : MonoBehaviour
             if (CheckLine(y))
             {
                 DeleteLine(y);
-                MoveDown(y);
+                lowerUpperRows(y + 1);
                 y--;
             }
         }
@@ -149,19 +133,23 @@ public class Tetromino : MonoBehaviour
         }
         GameManager.score += 50;
     }
-    private void MoveDown(int i)
+    private void lowerRow(int y)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (grid[x, y] != null)
+            {
+                grid[x, y - 1] = grid[x, y];
+                grid[x, y] = null;
+                grid[x, y - 1].position -= Vector3.up;
+            }
+        }
+    }
+    private void lowerUpperRows(int i)
     {
         for(int y = i; y < height; y++)
         {
-            for(int x = 0; x < width; x++)
-            {
-                if(grid[x, y] != null)
-                {
-                    grid[x, y - 1] = grid[x, y];
-                    grid[x, y] = null;
-                    grid[x, y - 1].transform.position -= Vector3.up;
-                }
-            }
+            lowerRow(y);   
         }
     }
 }
