@@ -44,7 +44,7 @@ public class TetrominoPrediction : MonoBehaviour
     }
     private void MakePrediction()
     {
-        transform.position = FindObjectOfType<Tetromino>().transform.position;
+        transform.position = GameObject.FindGameObjectWithTag("active").transform.position;
         string x = ValidMove();
         while (x == "Success")
         {

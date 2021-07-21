@@ -9,9 +9,13 @@ public class GameManager : MonoBehaviour
     public GameObject scoretxt;
     public GameObject endscore;
     public Transform SpawnPoint;
+    public Transform Next;
     private bool Lost = false;
     public static int score = 0;
     public static int level = 1;
+    private int next;
+    public GameObject NextTetromino;
+    public GameObject OldTetromino;
     void Start()
     {
         NewTetromino();
@@ -19,12 +23,29 @@ public class GameManager : MonoBehaviour
     }
     public void NewTetromino()
     {
-        
         if (!Lost)
         {
-            int id = Random.Range(0, Tetrominos.Length);
-            Instantiate(Tetrominos[id], SpawnPoint.position, Quaternion.identity);
-            Instantiate(TetrominosPrediction[id], SpawnPoint.position, Quaternion.identity);
+            if(NextTetromino == null)
+            {
+                int id = Random.Range(0, Tetrominos.Length);
+                next = Random.Range(0, Tetrominos.Length);
+                OldTetromino = Instantiate(Tetrominos[id], SpawnPoint.position, Quaternion.identity);
+                OldTetromino.tag = "active";
+                Instantiate(TetrominosPrediction[id], SpawnPoint.position, Quaternion.identity);
+                NextTetromino = Instantiate(Tetrominos[next], Next.position, Quaternion.identity);
+                NextTetromino.GetComponent<Tetromino>().enabled = false;
+            }
+            else
+            {
+                OldTetromino.tag = "notactive";
+                Destroy(NextTetromino);
+                OldTetromino = Instantiate(Tetrominos[next], SpawnPoint.position, Quaternion.identity);
+                OldTetromino.tag = "active";
+                Instantiate(TetrominosPrediction[next], SpawnPoint.position, Quaternion.identity);
+                next = Random.Range(0, Tetrominos.Length);
+                NextTetromino = Instantiate(Tetrominos[next], Next.position, Quaternion.identity);
+                NextTetromino.GetComponent<Tetromino>().enabled = false;
+            }
         }
     }
     public void GameOver()
