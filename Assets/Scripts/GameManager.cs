@@ -9,12 +9,18 @@ public class GameManager : MonoBehaviour
     public GameObject scoretxt;
     public GameObject endscore;
     public Transform SpawnPoint;
-    public Transform Next;
+    public Transform Next1;
+    public Transform Next2;
+    public Transform Next3;
     private bool Lost = false;
     public static int score = 0;
     public static int level = 1;
-    private int next;
-    public GameObject NextTetromino;
+    private int first;
+    private int second;
+    private int third;
+    public GameObject FirstTetromino;
+    public GameObject SecondTetromino;
+    public GameObject ThirdTetromino;
     public GameObject OldTetromino;
     void Start()
     {
@@ -25,26 +31,40 @@ public class GameManager : MonoBehaviour
     {
         if (!Lost)
         {
-            if(NextTetromino == null)
+            if(FirstTetromino == null)
             {
                 int id = Random.Range(0, Tetrominos.Length);
-                next = Random.Range(0, Tetrominos.Length);
+                first = Random.Range(0, Tetrominos.Length);
+                second = Random.Range(0, Tetrominos.Length);
+                third = Random.Range(0, Tetrominos.Length);
                 OldTetromino = Instantiate(Tetrominos[id], SpawnPoint.position, Quaternion.identity);
                 OldTetromino.tag = "active";
                 Instantiate(TetrominosPrediction[id], SpawnPoint.position, Quaternion.identity);
-                NextTetromino = Instantiate(Tetrominos[next], Next.position, Quaternion.identity);
-                NextTetromino.GetComponent<Tetromino>().enabled = false;
+                FirstTetromino = Instantiate(Tetrominos[first], Next1.position, Quaternion.identity);
+                FirstTetromino.GetComponent<Tetromino>().enabled = false;
+                SecondTetromino = Instantiate(Tetrominos[second], Next2.position, Quaternion.identity);
+                SecondTetromino.GetComponent<Tetromino>().enabled = false;
+                ThirdTetromino = Instantiate(Tetrominos[third], Next3.position, Quaternion.identity);
+                ThirdTetromino.GetComponent<Tetromino>().enabled = false;
             }
             else
             {
                 OldTetromino.tag = "notactive";
-                Destroy(NextTetromino);
-                OldTetromino = Instantiate(Tetrominos[next], SpawnPoint.position, Quaternion.identity);
+                Destroy(FirstTetromino);
+                Destroy(SecondTetromino);
+                Destroy(ThirdTetromino);
+                OldTetromino = Instantiate(Tetrominos[first], SpawnPoint.position, Quaternion.identity);
                 OldTetromino.tag = "active";
-                Instantiate(TetrominosPrediction[next], SpawnPoint.position, Quaternion.identity);
-                next = Random.Range(0, Tetrominos.Length);
-                NextTetromino = Instantiate(Tetrominos[next], Next.position, Quaternion.identity);
-                NextTetromino.GetComponent<Tetromino>().enabled = false;
+                Instantiate(TetrominosPrediction[first], SpawnPoint.position, Quaternion.identity);
+                first = second;
+                second = third;
+                third = Random.Range(0, Tetrominos.Length);
+                FirstTetromino = Instantiate(Tetrominos[first], Next1.position, Quaternion.identity);
+                FirstTetromino.GetComponent<Tetromino>().enabled = false;
+                SecondTetromino = Instantiate(Tetrominos[second], Next2.position, Quaternion.identity);
+                SecondTetromino.GetComponent<Tetromino>().enabled = false;
+                ThirdTetromino = Instantiate(Tetrominos[third], Next3.position, Quaternion.identity);
+                ThirdTetromino.GetComponent<Tetromino>().enabled = false;
             }
         }
     }
